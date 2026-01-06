@@ -1,6 +1,6 @@
 {
   "domain": "iqua_softener",
-  "name": "iQua Water Softener (Fixed)",
+  "name": "iQua Water Softener - 2026",
   "documentation": "https://github.com/corapoid/homeassistant-iqua/",
   "issue_tracker": "https://github.com/corapoid/homeassistant-iqua/issues",
   "dependencies": [],
