@@ -162,6 +162,6 @@ This project uses an MIT license. See [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-- Original integration: [@arturzx](https://github.com/arturzx/homeassistant-iqua-softener)
-- HA 2024+ compatibility fix: [@corapoid](https://github.com/corapoid)
+- **Maintainer:** [@corapoid](https://github.com/corapoid) - Bug fixes, retry mechanism, config flow validation
+- **Original integration:** [@arturzx](https://github.com/arturzx/homeassistant-iqua-softener) - Initial implementation
 - Built with ❤️ using [Claude Code](https://claude.com/claude-code)

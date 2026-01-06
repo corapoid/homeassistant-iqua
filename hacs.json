@@ -1,5 +1,8 @@
 {
-  "name": "iQua Water Softener - 2026",
+  "name": "iQua Water Softener (Fixed)",
   "render_readme": true,
-  "domains": ["sensor"]
+  "domains": ["sensor"],
+  "homeassistant": "2024.1.0",
+  "zip_release": false,
+  "filename": "homeassistant-iqua"
 }
