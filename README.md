@@ -131,10 +131,33 @@ action:
       message: "Wysokie zużycie dzisiaj: {{ states('sensor.iqua_[dsn]_today_water_usage') }} m³"
 ```
 
+## Testing Credentials
+
+Before adding the integration to Home Assistant, you can test your credentials using the included test script:
+
+```bash
+# Run in interactive mode (will prompt for credentials)
+python3 test_iqua_api.py
+
+# Or provide credentials as arguments
+python3 test_iqua_api.py \
+  --username your@email.com \
+  --password yourpassword \
+  --serial DSN123456789
+```
+
+The script will:
+- ✅ Test authentication with Ecowater API
+- ✅ Show detailed error analysis if it fails
+- ✅ Display device data if successful
+- ✅ Help diagnose 2FA, wrong credentials, or API issues
+
 ## Troubleshooting
 
-### "Login failed" error
+### "Login failed" / "invalid_auth" error
+- **First:** Run `test_iqua_api.py` script to verify credentials work
 - Verify credentials in the iQua app (try logging in through the app first)
+- **Check for 2FA:** If app asks for email code, API requires 2FA (see issue #26)
 - Check if your account is active
 - Review Home Assistant logs: Settings → System → Logs → filter "iqua"
 
