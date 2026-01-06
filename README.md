@@ -30,6 +30,25 @@ The units displayed are set in the application settings.
 
 ## Installation
 
+### Option 1: HACS (Recommended)
+
+1. Open HACS in your Home Assistant
+2. Click on "Integrations"
+3. Click the three dots menu (⋮) in the top right corner
+4. Select "Custom repositories"
+5. Add this repository URL: `https://github.com/corapoid/homeassistant-iqua`
+6. Select category: "Integration"
+7. Click "Add"
+8. Find "iQua Softener (Fixed for HA 2024+)" in HACS
+9. Click "Download"
+10. Restart Home Assistant
+11. Go to Settings → Devices & Services → Add Integration
+12. Search for "iQua Softener"
+13. Enter your iQua app credentials and device serial number (DSN#)
+    - Note: The serial number field is case-sensitive
+
+### Option 2: Manual Installation
+
 1. Copy the `custom_components/iqua_softener` folder to your Home Assistant's config directory
 2. Restart Home Assistant
 3. Go to Settings → Devices & Services → Add Integration
