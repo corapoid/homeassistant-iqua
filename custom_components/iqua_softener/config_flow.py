@@ -38,6 +38,10 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 )
             except IquaSoftenerException as err:
                 error_str = str(err).lower()
+                # Log full error for debugging
+                _LOGGER.error("Validation error (full): %s", err)
+                _LOGGER.error("Error string (lower): %s", error_str)
+                
                 if "authentication error" in error_str or "invalid user" in error_str:
                     errors["base"] = "invalid_auth"
                 elif "502" in error_str:
@@ -46,7 +50,7 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "device_not_found"
                 else:
                     errors["base"] = "cannot_connect"
-                _LOGGER.error("Validation error: %s", err)
+                    _LOGGER.error("Unknown error pattern, defaulting to cannot_connect")
             except Exception as err:
                 errors["base"] = "unknown"
                 _LOGGER.exception("Unexpected error during validation")
