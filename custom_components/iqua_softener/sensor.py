@@ -1,21 +1,8 @@
+"""Sensor platform for iQua Softener."""
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import logging
 from typing import Optional
-
-from homeassistant.core import callback
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-    UpdateFailed,
-    CoordinatorEntity,
-)
-
-from iqua_softener import (
-    IquaSoftener,
-    IquaSoftenerData,
-    IquaSoftenerVolumeUnit,
-    IquaSoftenerException,
-)
 
 from homeassistant import config_entries, core
 from homeassistant.components.sensor import (
@@ -24,21 +11,21 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorEntityDescription,
 )
-from homeassistant.const import PERCENTAGE
-from homeassistant.const import UnitOfVolume
+from homeassistant.const import PERCENTAGE, UnitOfVolume
+from homeassistant.core import callback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from iqua_softener import IquaSoftenerData, IquaSoftenerVolumeUnit
 
 from .const import (
     DOMAIN,
-    CONF_USERNAME,
-    CONF_PASSWORD,
     CONF_DEVICE_SERIAL_NUMBER,
     VOLUME_FLOW_RATE_LITERS_PER_MINUTE,
     VOLUME_FLOW_RATE_GALLONS_PER_MINUTE,
 )
+from .coordinator import IquaSoftenerCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-
-UPDATE_INTERVAL = timedelta(minutes=5)
 
 
 async def async_setup_entry(
@@ -46,17 +33,17 @@ async def async_setup_entry(
     config_entry: config_entries.ConfigEntry,
     async_add_entities,
 ):
-    config = hass.data[DOMAIN][config_entry.entry_id]
+    """Set up iQua Softener sensors from a config entry."""
+    # Get coordinator from hass.data (created in __init__.py)
+    coordinator: IquaSoftenerCoordinator = hass.data[DOMAIN][config_entry.entry_id][
+        "coordinator"
+    ]
+
+    # Get device serial number from config
+    config = dict(config_entry.data)
     if config_entry.options:
         config.update(config_entry.options)
     device_serial_number = config[CONF_DEVICE_SERIAL_NUMBER]
-    coordinator = IquaSoftenerCoordinator(
-        hass,
-        IquaSoftener(
-            config[CONF_USERNAME], config[CONF_PASSWORD], device_serial_number
-        ),
-    )
-    await coordinator.async_config_entry_first_refresh()
     sensors = [
         clz(coordinator, device_serial_number, entity_description)
         for clz, entity_description in (
@@ -138,25 +125,6 @@ async def async_setup_entry(
         )
     ]
     async_add_entities(sensors)
-
-
-class IquaSoftenerCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass: core.HomeAssistant, iqua_softener: IquaSoftener):
-        super().__init__(
-            hass,
-            _LOGGER,
-            name="Iqua Softener",
-            update_interval=UPDATE_INTERVAL,
-        )
-        self._iqua_softener = iqua_softener
-
-    async def _async_update_data(self) -> IquaSoftenerData:
-        try:
-            return await self.hass.async_add_executor_job(
-                lambda: self._iqua_softener.get_data()
-            )
-        except IquaSoftenerException as err:
-            raise UpdateFailed(f"Get data failed: {err}")
 
 
 class IquaSoftenerSensor(SensorEntity, CoordinatorEntity, ABC):

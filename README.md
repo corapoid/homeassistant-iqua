@@ -1,8 +1,6 @@
 # iQua Softener - Fixed for HA 2024+
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![GitHub release](https://img.shields.io/github/release/corapoid/homeassistant-iqua.svg)](https://github.com/corapoid/homeassistant-iqua/releases)
-[![License](https://img.shields.io/github/license/corapoid/homeassistant-iqua.svg)](LICENSE)
 
 Fixed version of the original integration by [@arturzx](https://github.com/arturzx/homeassistant-iqua-softener), compatible with Home Assistant 2024+.
 
@@ -10,12 +8,16 @@ Fixed version of the original integration by [@arturzx](https://github.com/artur
 
 The original integration stopped working with Home Assistant 2024.1+ due to deprecated API calls. This version fixes compatibility issues.
 
-### Changes from original
+### Changes from original (v1.1.0)
 
-- ✅ Updated to use `async_forward_entry_setups` (HA 2024+ API)
-- ✅ Fixed `async_unload_entry` with `async_unload_platforms`
-- ✅ Fixed `AttributeError: 'ConfigEntries' object has no attribute 'async_forward_entry_setup'`
-- ✅ Added HACS support
+- ✅ **Fixed ConfigEntryNotReady error** - properly raised before platform setup
+- ✅ **Retry mechanism** - 3 automatic retries with exponential backoff for 502/timeout errors
+- ✅ **Config flow validation** - credentials tested during setup with helpful error messages
+- ✅ **Updated to use `async_forward_entry_setups`** (HA 2024+ API)
+- ✅ **Fixed `async_unload_entry`** with `async_unload_platforms`
+- ✅ **Separated coordinator** - cleaner code architecture
+- ✅ **Better error handling** - user-friendly messages for common issues
+- ✅ **Added HACS support**
 
 Original repository: https://github.com/arturzx/homeassistant-iqua-softener
 
@@ -29,7 +31,7 @@ The integration connects to EcoWater servers to retrieve real-time water softene
 
 ## Key Features
 
-The integration generates nine sensors with 5-second refresh intervals, including:
+The integration generates nine sensors with 5-minute refresh intervals, including:
 - Connection status to Ecowater servers
 - Device date/time settings
 - Salt level percentage

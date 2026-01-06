@@ -2,14 +2,27 @@
   "config": {
     "step": {
       "user": {
+        "title": "iQua Softener Setup",
+        "description": "Enter your iQua app credentials and device serial number (DSN#). You can find the DSN# in the iQua mobile app under device information.",
         "data": {
-          "username": "Username",
-          "password": "Password",
-          "device_sn": "Serial Number"
-        },
-        "description": "Enter your iQua credentials and device serial number.",
-        "title": "Setup"
+          "username": "iQua username (email)",
+          "password": "iQua password",
+          "device_sn": "Device serial number (DSN#)"
+        }
       }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password. Please check your iQua app credentials.",
+      "device_not_found": "Device not found. Verify that the serial number (DSN#) is correct (case-sensitive).",
+      "server_unavailable": "Ecowater server temporarily unavailable (502 error). Please try again in a few minutes.",
+      "cannot_connect": "Unable to connect to Ecowater servers. Check your internet connection.",
+      "unknown": "Unexpected error occurred. Check Home Assistant logs for details."
+    },
+    "abort": {
+      "already_configured": "This device is already configured"
+    }
+  }
+}
     }
   }
 }
