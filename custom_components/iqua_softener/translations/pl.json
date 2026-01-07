@@ -1,0 +1,82 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfiguracja iQua Softener",
+        "description": "Wprowadź dane logowania do aplikacji iQua oraz numer seryjny urządzenia (DSN#). Numer znajdziesz w aplikacji iQua w informacjach o urządzeniu.",
+        "data": {
+          "username": "Nazwa użytkownika iQua (email)",
+          "password": "Hasło iQua",
+          "device_sn": "Numer seryjny urządzenia (DSN#)"
+        }
+      },
+      "hub": {
+        "title": "Połącz z kontem EcoWater",
+        "description": "Wprowadź dane logowania do konta EcoWater. Urządzenia będą dodawane ręcznie.",
+        "data": {
+          "username": "Email",
+          "password": "Hasło"
+        }
+      },
+      "device": {
+        "title": "Dodaj urządzenie zmiękczające wodę",
+        "description": "Wprowadź numer seryjny urządzenia (DSN#) aby dodać je do hub.",
+        "data": {
+          "device_sn": "Numer seryjny urządzenia (DSN#)",
+          "custom_name": "Nazwa własna (opcjonalnie)"
+        }
+      },
+      "legacy": {
+        "title": "Bezpośrednia konfiguracja urządzenia",
+        "description": "Tryb Legacy: Wprowadź dane logowania i numer seryjny urządzenia bezpośrednio.",
+        "data": {
+          "username": "Email",
+          "password": "Hasło",
+          "device_sn": "Numer seryjny urządzenia (DSN#)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło. Sprawdź dane logowania w aplikacji iQua.",
+      "device_not_found": "Nie znaleziono urządzenia. Sprawdź czy numer seryjny (DSN#) jest poprawny (wielkość liter ma znaczenie).",
+      "server_unavailable": "Serwer Ecowater tymczasowo niedostępny (błąd 502). Spróbuj ponownie za kilka minut.",
+      "cannot_connect": "Nie można połączyć z serwerami Ecowater. Sprawdź połączenie internetowe.",
+      "unknown": "Wystąpił nieoczekiwany błąd. Sprawdź logi Home Assistant.",
+      "no_hub": "Brak skonfigurowanego hub. Najpierw dodaj hub przed dodaniem urządzeń."
+    },
+    "abort": {
+      "already_configured": "To urządzenie jest już skonfigurowane"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "state": {
+        "name": "Stan"
+      },
+      "date_time": {
+        "name": "Data/czas"
+      },
+      "last_regeneration": {
+        "name": "Ostatnia regeneracja"
+      },
+      "out_of_salt_estimated_day": {
+        "name": "Szacowany dzień braku soli"
+      },
+      "salt_level": {
+        "name": "Poziom soli"
+      },
+      "available_water": {
+        "name": "Dostępna woda"
+      },
+      "water_current_flow": {
+        "name": "Bieżący przepływ wody"
+      },
+      "water_usage_today": {
+        "name": "Zużycie wody dzisiaj"
+      },
+      "water_usage_daily_average": {
+        "name": "Średnie dzienne zużycie wody"
+      }
+    }
+  }
+}

@@ -49,37 +49,37 @@ async def async_setup_entry(
         for clz, entity_description in (
             (
                 IquaSoftenerStateSensor,
-                SensorEntityDescription(key="State", name="State"),
+                SensorEntityDescription(key="state", translation_key="state"),
             ),
             (
                 IquaSoftenerDeviceDateTimeSensor,
                 SensorEntityDescription(
-                    key="DATE_TIME",
-                    name="Date/time",
+                    key="date_time",
+                    translation_key="date_time",
                     icon="mdi:clock",
                 ),
             ),
             (
                 IquaSoftenerLastRegenerationSensor,
                 SensorEntityDescription(
-                    key="LAST_REGENERATION",
-                    name="Last regeneration",
+                    key="last_regeneration",
+                    translation_key="last_regeneration",
                     device_class=SensorDeviceClass.TIMESTAMP,
                 ),
             ),
             (
                 IquaSoftenerOutOfSaltEstimatedDaySensor,
                 SensorEntityDescription(
-                    key="OUT_OF_SALT_ESTIMATED_DAY",
-                    name="Out of salt estimated day",
+                    key="out_of_salt_estimated_day",
+                    translation_key="out_of_salt_estimated_day",
                     device_class=SensorDeviceClass.TIMESTAMP,
                 ),
             ),
             (
                 IquaSoftenerSaltLevelSensor,
                 SensorEntityDescription(
-                    key="SALT_LEVEL",
-                    name="Salt level",
+                    key="salt_level",
+                    translation_key="salt_level",
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=PERCENTAGE,
                 ),
@@ -87,8 +87,8 @@ async def async_setup_entry(
             (
                 IquaSoftenerAvailableWaterSensor,
                 SensorEntityDescription(
-                    key="AVAILABLE_WATER",
-                    name="Available water",
+                    key="available_water",
+                    translation_key="available_water",
                     state_class=SensorStateClass.TOTAL,
                     device_class=SensorDeviceClass.WATER,
                     icon="mdi:water",
@@ -97,8 +97,8 @@ async def async_setup_entry(
             (
                 IquaSoftenerWaterCurrentFlowSensor,
                 SensorEntityDescription(
-                    key="WATER_CURRENT_FLOW",
-                    name="Water current flow",
+                    key="water_current_flow",
+                    translation_key="water_current_flow",
                     state_class=SensorStateClass.MEASUREMENT,
                     icon="mdi:water-pump",
                 ),
@@ -106,8 +106,8 @@ async def async_setup_entry(
             (
                 IquaSoftenerWaterUsageTodaySensor,
                 SensorEntityDescription(
-                    key="WATER_USAGE_TODAY",
-                    name="Today water usage",
+                    key="water_usage_today",
+                    translation_key="water_usage_today",
                     state_class=SensorStateClass.TOTAL_INCREASING,
                     device_class=SensorDeviceClass.WATER,
                     icon="mdi:water-minus",
@@ -116,8 +116,8 @@ async def async_setup_entry(
             (
                 IquaSoftenerWaterUsageDailyAverageSensor,
                 SensorEntityDescription(
-                    key="WATER_USAGE_DAILY_AVERAGE",
-                    name="Water usage daily average",
+                    key="water_usage_daily_average",
+                    translation_key="water_usage_daily_average",
                     state_class=SensorStateClass.MEASUREMENT,
                     device_class=SensorDeviceClass.WATER,
                 ),
@@ -128,6 +128,8 @@ async def async_setup_entry(
 
 
 class IquaSoftenerSensor(SensorEntity, CoordinatorEntity, ABC):
+    _attr_has_entity_name = True
+    
     def __init__(
         self,
         coordinator: IquaSoftenerCoordinator,
@@ -141,6 +143,11 @@ class IquaSoftenerSensor(SensorEntity, CoordinatorEntity, ABC):
 
         if entity_description is not None:
             self.entity_description = entity_description
+        
+        # Link to device
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, device_serial_number)},
+        }
         
         # Initialize with current data if available
         if coordinator.data is not None:
