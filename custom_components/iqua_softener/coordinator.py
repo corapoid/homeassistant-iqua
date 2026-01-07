@@ -38,9 +38,16 @@ class IquaSoftenerCoordinator(DataUpdateCoordinator[IquaSoftenerData]):
                     attempt + 1,
                     retries,
                 )
-                return await self.hass.async_add_executor_job(
+                data = await self.hass.async_add_executor_job(
                     self._iqua_softener.get_data
                 )
+                _LOGGER.info(
+                    "Successfully fetched data for device %s - State: %s, Salt: %s%%",
+                    self._iqua_softener.device_serial_number,
+                    data.state.value,
+                    data.salt_level_percent,
+                )
+                return data
             except IquaSoftenerException as err:
                 error_str = str(err)
 

@@ -141,11 +141,40 @@ class IquaSoftenerSensor(SensorEntity, CoordinatorEntity, ABC):
 
         if entity_description is not None:
             self.entity_description = entity_description
+        
+        # Initialize with current data if available
+        if coordinator.data is not None:
+            _LOGGER.debug(
+                "Initializing sensor %s with existing data",
+                self._attr_unique_id,
+            )
+            self.update(coordinator.data)
+        else:
+            _LOGGER.warning(
+                "Sensor %s initialized without data - waiting for first refresh",
+                self._attr_unique_id,
+            )
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        self.update(self.coordinator.data)
+        """Handle updated data from coordinator."""
+        if self.coordinator.data is not None:
+            _LOGGER.debug(
+                "Updating sensor %s with new data",
+                self._attr_unique_id,
+            )
+            self.update(self.coordinator.data)
+        else:
+            _LOGGER.warning(
+                "Coordinator update for %s but data is None",
+                self._attr_unique_id,
+            )
         self.async_write_ha_state()
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return self.coordinator.last_update_success and self.coordinator.data is not None
 
     @abstractmethod
     def update(self, data: IquaSoftenerData):
