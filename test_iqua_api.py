@@ -7,23 +7,39 @@ from datetime import datetime
 
 
 def install_library():
-    """Install iqua_softener library if not present"""
+    """Install iqua_softener library and dependencies if not present"""
     try:
         import iqua_softener
         return True
-    except ImportError:
-        print("📦 Installing iqua_softener library...")
+    except ImportError as e:
+        print(f"📦 Installing required libraries...")
+        print(f"   (Missing: {e})")
         import subprocess
+        
+        # Install both iqua_softener and its dependencies
+        packages = ["requests", "iqua_softener~=1.0.2"]
+        
+        for package in packages:
+            try:
+                print(f"   Installing {package}...")
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", package, "--user"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+            except Exception as install_err:
+                print(f"   ⚠️  Warning: {install_err}")
+        
+        print("✅ Installation complete\n")
+        
+        # Try import again
         try:
-            subprocess.check_call(
-                [sys.executable, "-m", "pip", "install", "iqua_softener~=1.0.2"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
-            print("✅ Library installed successfully\n")
+            import iqua_softener
             return True
-        except Exception as e:
-            print(f"❌ Failed to install library: {e}")
+        except ImportError as e2:
+            print(f"❌ Still cannot import: {e2}")
+            print("\nPlease install manually:")
+            print("  pip3 install --user requests iqua_softener")
             return False
 
 
