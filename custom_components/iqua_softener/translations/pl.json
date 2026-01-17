@@ -3,11 +3,10 @@
     "step": {
       "user": {
         "title": "Konfiguracja iQua Softener",
-        "description": "Wprowadź dane logowania do aplikacji iQua oraz numer seryjny urządzenia (DSN#). Numer znajdziesz w aplikacji iQua w informacjach o urządzeniu.",
-        "data": {
-          "username": "Nazwa użytkownika iQua (email)",
-          "password": "Hasło iQua",
-          "device_sn": "Numer seryjny urządzenia (DSN#)"
+        "description": "Wybierz sposób konfiguracji zmiękczacza wody.",
+        "menu_options": {
+          "hub": "Połącz konto EcoWater (zalecane)",
+          "legacy": "Bezpośrednia konfiguracja urządzenia"
         }
       },
       "hub": {

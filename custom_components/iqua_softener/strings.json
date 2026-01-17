@@ -3,11 +3,10 @@
     "step": {
       "user": {
         "title": "iQua Softener Setup",
-        "description": "Enter your iQua app credentials and device serial number (DSN#). You can find the DSN# in the iQua mobile app under device information.",
-        "data": {
-          "username": "iQua username (email)",
-          "password": "iQua password",
-          "device_sn": "Device serial number (DSN#)"
+        "description": "Choose how you want to set up your water softener.",
+        "menu_options": {
+          "hub": "Connect EcoWater Account (recommended)",
+          "legacy": "Direct Device Setup"
         }
       },
       "hub": {
