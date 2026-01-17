@@ -40,11 +40,11 @@
       "device_not_found": "Nie znaleziono urządzenia. Sprawdź czy numer seryjny (DSN#) jest poprawny (wielkość liter ma znaczenie).",
       "server_unavailable": "Serwer Ecowater tymczasowo niedostępny (błąd 502). Spróbuj ponownie za kilka minut.",
       "cannot_connect": "Nie można połączyć z serwerami Ecowater. Sprawdź połączenie internetowe.",
-      "unknown": "Wystąpił nieoczekiwany błąd. Sprawdź logi Home Assistant.",
-      "no_hub": "Brak skonfigurowanego hub. Najpierw dodaj hub przed dodaniem urządzeń."
+      "unknown": "Wystąpił nieoczekiwany błąd. Sprawdź logi Home Assistant."
     },
     "abort": {
-      "already_configured": "To urządzenie jest już skonfigurowane"
+      "already_configured": "To urządzenie jest już skonfigurowane",
+      "no_hub": "Brak skonfigurowanego hub. Najpierw dodaj hub przed dodaniem urządzeń."
     }
   },
   "entity": {

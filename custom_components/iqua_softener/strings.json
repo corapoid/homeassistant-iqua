@@ -40,11 +40,11 @@
       "device_not_found": "Device not found. Verify that the serial number (DSN#) is correct (case-sensitive).",
       "server_unavailable": "Ecowater server temporarily unavailable (502 error). Please try again in a few minutes.",
       "cannot_connect": "Unable to connect to Ecowater servers. Check your internet connection.",
-      "unknown": "Unexpected error occurred. Check Home Assistant logs for details.",
-      "no_hub": "No hub configured. Please add a hub first before adding devices."
+      "unknown": "Unexpected error occurred. Check Home Assistant logs for details."
     },
     "abort": {
-      "already_configured": "This device is already configured"
+      "already_configured": "This device is already configured",
+      "no_hub": "No hub configured. Please add a hub first before adding devices."
     }
   },
   "entity": {
