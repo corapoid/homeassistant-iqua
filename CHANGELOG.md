@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2026-01-17
+
+### Fixed
+- Move `no_hub` from error to abort section in translations (was causing missing message)
+- Update manifest.json version to match release
+
 ## [2.0.2] - 2026-01-17
 
 ### Fixed
