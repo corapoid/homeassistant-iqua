@@ -67,18 +67,32 @@ class IquaHub:
         headers = {"User-Agent": USER_AGENT, "Content-Type": "application/json"}
         
         # Authenticate
-        auth_response = session.post(
-            f"{API_BASE_URL}/auth/signin",
-            json={"username": self._username, "password": self._password},
-            headers=headers,
-        )
+        try:
+            auth_response = session.post(
+                f"{API_BASE_URL}/auth/signin",
+                json={"username": self._username, "password": self._password},
+                headers=headers,
+                timeout=30,
+            )
+        except requests.exceptions.Timeout:
+            raise IquaSoftenerException("Connection timeout - server not responding")
+        except requests.exceptions.ConnectionError:
+            raise IquaSoftenerException("Cannot connect to EcoWater servers")
+        except requests.exceptions.RequestException as err:
+            raise IquaSoftenerException(f"Connection error: {err}")
         
         if auth_response.status_code == 401:
             raise IquaSoftenerException("Authentication error: Invalid username or password")
+        if auth_response.status_code == 502:
+            raise IquaSoftenerException("Server unavailable (502) - try again later")
         if auth_response.status_code != 200:
-            raise IquaSoftenerException(f"Authentication failed: {auth_response.status_code}")
+            raise IquaSoftenerException(f"Authentication failed: HTTP {auth_response.status_code}")
         
-        auth_data = auth_response.json()
+        try:
+            auth_data = auth_response.json()
+        except ValueError:
+            raise IquaSoftenerException("Invalid response from server")
+            
         if auth_data.get("code") != "OK":
             raise IquaSoftenerException(f"Authentication failed: {auth_data.get('message')}")
         
@@ -87,15 +101,23 @@ class IquaHub:
         
         # Fetch devices list
         headers["Authorization"] = f"{token_type} {token}"
-        devices_response = session.get(
-            f"{API_BASE_URL}/system",
-            headers=headers,
-        )
+        try:
+            devices_response = session.get(
+                f"{API_BASE_URL}/system",
+                headers=headers,
+                timeout=30,
+            )
+        except requests.exceptions.RequestException as err:
+            raise IquaSoftenerException(f"Failed to fetch devices: {err}")
         
         if devices_response.status_code != 200:
-            raise IquaSoftenerException(f"Failed to fetch devices: {devices_response.status_code}")
+            raise IquaSoftenerException(f"Failed to fetch devices: HTTP {devices_response.status_code}")
         
-        devices_data = devices_response.json()
+        try:
+            devices_data = devices_response.json()
+        except ValueError:
+            raise IquaSoftenerException("Invalid response when fetching devices")
+            
         if devices_data.get("code") != "OK":
             raise IquaSoftenerException(f"Failed to fetch devices: {devices_data.get('message')}")
         

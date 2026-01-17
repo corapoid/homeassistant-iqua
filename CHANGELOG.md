@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-01-17
+
+### Fixed
+- Improved error handling for authentication - proper error messages for invalid credentials
+- Added timeout handling (30s) for API requests
+- Added handling for connection errors, timeouts, and invalid server responses
+- Better error messages for 502 server errors
+
 ## [2.1.0] - 2026-01-17
 
 ### Added
