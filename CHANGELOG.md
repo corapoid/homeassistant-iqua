@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2026-01-17
+
+### Fixed
+- Missing menu option labels in config flow - Added `menu_options` translations for hub/legacy selection menu
+
 ## [2.0.1] - 2026-01-17
 
 ### Fixed
