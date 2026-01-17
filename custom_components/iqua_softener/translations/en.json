@@ -1,0 +1,82 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "iQua Softener Setup",
+        "description": "Enter your iQua app credentials and device serial number (DSN#). You can find the DSN# in the iQua mobile app under device information.",
+        "data": {
+          "username": "iQua username (email)",
+          "password": "iQua password",
+          "device_sn": "Device serial number (DSN#)"
+        }
+      },
+      "hub": {
+        "title": "Connect to EcoWater Account",
+        "description": "Enter your EcoWater credentials. Devices will be added manually.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "device": {
+        "title": "Add Water Softener Device",
+        "description": "Enter the device serial number (DSN#) to add it to your hub.",
+        "data": {
+          "device_sn": "Device Serial Number (DSN#)",
+          "custom_name": "Custom Name (optional)"
+        }
+      },
+      "legacy": {
+        "title": "Direct Device Setup",
+        "description": "Legacy mode: Enter credentials and device serial number directly.",
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "device_sn": "Device Serial Number (DSN#)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password. Please check your iQua app credentials.",
+      "device_not_found": "Device not found. Verify that the serial number (DSN#) is correct (case-sensitive).",
+      "server_unavailable": "Ecowater server temporarily unavailable (502 error). Please try again in a few minutes.",
+      "cannot_connect": "Unable to connect to Ecowater servers. Check your internet connection.",
+      "unknown": "Unexpected error occurred. Check Home Assistant logs for details.",
+      "no_hub": "No hub configured. Please add a hub first before adding devices."
+    },
+    "abort": {
+      "already_configured": "This device is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "state": {
+        "name": "State"
+      },
+      "date_time": {
+        "name": "Date/time"
+      },
+      "last_regeneration": {
+        "name": "Last regeneration"
+      },
+      "out_of_salt_estimated_day": {
+        "name": "Out of salt estimated day"
+      },
+      "salt_level": {
+        "name": "Salt level"
+      },
+      "available_water": {
+        "name": "Available water"
+      },
+      "water_current_flow": {
+        "name": "Water current flow"
+      },
+      "water_usage_today": {
+        "name": "Today water usage"
+      },
+      "water_usage_daily_average": {
+        "name": "Water usage daily average"
+      }
+    }
+  }
+}
