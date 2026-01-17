@@ -1,12 +1,17 @@
 """Hub for EcoWater account managing multiple devices."""
 import logging
-from typing import Dict, Optional
+from typing import Dict, List, Optional
+
+import requests
 
 from iqua_softener import IquaSoftener, IquaSoftenerException
 
 from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
+
+API_BASE_URL = "https://apioem.ecowater.com/v1"
+USER_AGENT = "okhttp/3.12.1"
 
 
 class IquaHub:
@@ -37,27 +42,88 @@ class IquaHub:
     async def async_setup(self) -> bool:
         """Set up the hub and discover devices."""
         try:
-            # Verify credentials by creating IquaSoftener instance
-            # API doesn't support list_devices(), so we use mock mode
-            await self.hass.async_add_executor_job(
-                self._verify_credentials
+            # Authenticate and discover devices
+            devices = await self.hass.async_add_executor_job(
+                self._authenticate_and_list_devices
             )
             
+            # Store discovered devices
+            for device in devices:
+                self._devices[device['serial']] = device
+            
             _LOGGER.info(
-                "Hub setup successful for account %s (manual device mode)",
+                "Hub setup successful for account %s, found %d device(s)",
                 self._username,
+                len(devices),
             )
             return True
         except IquaSoftenerException as err:
             _LOGGER.error("Failed to setup hub: %s", err)
-            return False
+            raise
 
-    def _verify_credentials(self) -> None:
-        """Verify credentials by attempting to create API instance."""
-        # Create instance without serial to verify account exists
-        # This will fail if credentials are wrong
-        _ = IquaSoftener(self._username, self._password, None)
-        # If we get here, credentials are valid
+    def _authenticate_and_list_devices(self) -> List[dict]:
+        """Authenticate and fetch list of devices from EcoWater API."""
+        session = requests.Session()
+        headers = {"User-Agent": USER_AGENT, "Content-Type": "application/json"}
+        
+        # Authenticate
+        auth_response = session.post(
+            f"{API_BASE_URL}/auth/signin",
+            json={"username": self._username, "password": self._password},
+            headers=headers,
+        )
+        
+        if auth_response.status_code == 401:
+            raise IquaSoftenerException("Authentication error: Invalid username or password")
+        if auth_response.status_code != 200:
+            raise IquaSoftenerException(f"Authentication failed: {auth_response.status_code}")
+        
+        auth_data = auth_response.json()
+        if auth_data.get("code") != "OK":
+            raise IquaSoftenerException(f"Authentication failed: {auth_data.get('message')}")
+        
+        token = auth_data["data"]["token"]
+        token_type = auth_data["data"]["tokenType"]
+        
+        # Fetch devices list
+        headers["Authorization"] = f"{token_type} {token}"
+        devices_response = session.get(
+            f"{API_BASE_URL}/system",
+            headers=headers,
+        )
+        
+        if devices_response.status_code != 200:
+            raise IquaSoftenerException(f"Failed to fetch devices: {devices_response.status_code}")
+        
+        devices_data = devices_response.json()
+        if devices_data.get("code") != "OK":
+            raise IquaSoftenerException(f"Failed to fetch devices: {devices_data.get('message')}")
+        
+        # Parse devices
+        devices = []
+        for device in devices_data.get("data", []):
+            devices.append({
+                'serial': device.get('serialNumber'),
+                'nickname': device.get('nickname', 'Device'),
+                'model': device.get('modelDescription', 'Water Softener'),
+                'model_id': device.get('modelName'),
+                'system_type': device.get('systemType'),
+                'product_image': device.get('productImage'),
+            })
+        
+        return devices
+
+    async def async_discover_devices(self) -> List[dict]:
+        """Discover devices (can be called to refresh device list)."""
+        devices = await self.hass.async_add_executor_job(
+            self._authenticate_and_list_devices
+        )
+        
+        # Update stored devices
+        for device in devices:
+            self._devices[device['serial']] = device
+        
+        return devices
 
     async def async_get_device(self, device_serial: str) -> Optional[dict]:
         """

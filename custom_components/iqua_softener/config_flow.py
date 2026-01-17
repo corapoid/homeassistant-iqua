@@ -54,6 +54,7 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize config flow."""
         self._hub_data: Optional[Dict[str, Any]] = None
+        self._discovered_devices: list = []
 
     async def async_step_user(
         self, user_input: Optional[Dict[str, Any]] = None
@@ -73,7 +74,7 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: Dict[str, str] = {}
         
         if user_input is not None:
-            # Validate credentials
+            # Validate credentials and discover devices
             try:
                 hub = IquaHub(
                     self.hass,
@@ -81,17 +82,28 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_PASSWORD],
                 )
                 
-                # Setup hub (verifies credentials)
+                # Setup hub (authenticates and discovers devices)
                 await hub.async_setup()
                 
-                # Store hub data for next step
+                # Store hub data and discovered devices
                 self._hub_data = {
                     CONF_IS_HUB: True,
                     CONF_USERNAME: user_input[CONF_USERNAME],
                     CONF_PASSWORD: user_input[CONF_PASSWORD],
                 }
+                self._discovered_devices = list(hub.devices.values())
                 
-                # Create hub entry
+                _LOGGER.info(
+                    "Hub authenticated, found %d device(s): %s",
+                    len(self._discovered_devices),
+                    [d.get('serial') for d in self._discovered_devices],
+                )
+                
+                # Create hub entry with discovered devices info
+                self._hub_data["discovered_devices"] = [
+                    d.get('serial') for d in self._discovered_devices
+                ]
+                
                 return self.async_create_entry(
                     title=f"EcoWater Hub ({user_input[CONF_USERNAME]})",
                     data=self._hub_data,
@@ -230,6 +242,30 @@ class IquaSoftenerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="legacy",
             data_schema=DATA_SCHEMA_LEGACY,
             errors=errors,
+        )
+
+    async def async_step_auto_discovery(
+        self, discovery_info: Dict[str, Any]
+    ) -> FlowResult:
+        """Handle auto-discovered devices from hub."""
+        device_serial = discovery_info[CONF_DEVICE_SERIAL_NUMBER]
+        device_info = discovery_info.get("device_info", {})
+        hub_id = discovery_info[CONF_HUB_ID]
+        
+        # Set unique ID
+        await self.async_set_unique_id(device_serial.lower())
+        self._abort_if_unique_id_configured()
+        
+        # Create device entry automatically
+        device_name = device_info.get('nickname') or device_info.get('model') or f"Water Softener {device_serial[-6:]}"
+        
+        return self.async_create_entry(
+            title=device_name,
+            data={
+                CONF_IS_HUB: False,
+                CONF_HUB_ID: hub_id,
+                CONF_DEVICE_SERIAL_NUMBER: device_serial,
+            },
         )
 
     async def _test_credentials(

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-01-17
+
+### Added
+- **Auto-discovery of devices** - When connecting EcoWater account, all registered devices are automatically discovered and added to Home Assistant
+- New `/system` API endpoint integration for listing devices
+
+### Changed
+- Hub setup now automatically creates device entries for all discovered water softeners
+- No longer need to manually add devices after connecting account
+
 ## [2.0.3] - 2026-01-17
 
 ### Fixed

@@ -55,11 +55,9 @@ async def async_setup_hub(
         config[CONF_PASSWORD],
     )
     
-    # Setup and verify credentials
+    # Setup and verify credentials (also discovers devices)
     try:
-        success = await hub.async_setup()
-        if not success:
-            raise ConfigEntryNotReady("Hub setup failed")
+        await hub.async_setup()
     except IquaSoftenerException as err:
         raise ConfigEntryNotReady(f"Unable to connect to hub: {err}") from err
     except Exception as err:
@@ -75,9 +73,42 @@ async def async_setup_hub(
     }
     
     _LOGGER.info(
-        "Hub setup complete for account %s",
+        "Hub setup complete for account %s, discovered %d device(s)",
         config[CONF_USERNAME],
+        len(hub.devices),
     )
+    
+    # Auto-create device entries for discovered devices
+    for device_serial, device_info in hub.devices.items():
+        # Check if device is already configured
+        existing_entries = [
+            e for e in hass.config_entries.async_entries(DOMAIN)
+            if e.data.get(CONF_DEVICE_SERIAL_NUMBER) == device_serial
+        ]
+        
+        if existing_entries:
+            _LOGGER.debug("Device %s already configured, skipping", device_serial)
+            continue
+        
+        # Create config entry for device
+        _LOGGER.info(
+            "Auto-adding device: %s (%s)",
+            device_serial,
+            device_info.get('model', 'Unknown'),
+        )
+        
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": "auto_discovery"},
+                data={
+                    CONF_IS_HUB: False,
+                    CONF_HUB_ID: entry.entry_id,
+                    CONF_DEVICE_SERIAL_NUMBER: device_serial,
+                    "device_info": device_info,
+                },
+            )
+        )
     
     return True
 
