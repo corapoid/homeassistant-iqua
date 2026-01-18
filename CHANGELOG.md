@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2026-01-18
+
+### Fixed
+- Race condition on HA restart causing device setup to fail before hub is loaded
+- Devices linked to hub now properly wait for hub initialization
+- Better handling of orphaned devices when hub entry is removed
+
 ## [2.1.1] - 2026-01-17
 
 ### Fixed

@@ -124,9 +124,35 @@ async def async_setup_device(
     hub_id = config.get(CONF_HUB_ID)
     hub = None
     
-    if hub_id and hub_id in hass.data.get(DOMAIN, {}):
-        hub = hass.data[DOMAIN][hub_id]["hub"]
-        _LOGGER.debug("Device linked to hub %s", hub_id)
+    if hub_id:
+        # Device is linked to a hub - check if hub is loaded
+        if hub_id in hass.data.get(DOMAIN, {}):
+            hub = hass.data[DOMAIN][hub_id]["hub"]
+            _LOGGER.debug("Device linked to hub %s", hub_id)
+        else:
+            # Hub exists in config but not yet loaded (race condition on HA restart)
+            hub_entry = hass.config_entries.async_get_entry(hub_id)
+            if hub_entry:
+                _LOGGER.debug(
+                    "Hub %s not yet loaded, deferring device setup for %s",
+                    hub_id,
+                    config.get(CONF_DEVICE_SERIAL_NUMBER),
+                )
+                raise ConfigEntryNotReady(
+                    f"Waiting for hub {hub_id} to load first"
+                )
+            else:
+                # Hub entry no longer exists - this device is orphaned
+                _LOGGER.warning(
+                    "Hub %s no longer exists, device %s is orphaned",
+                    hub_id,
+                    config.get(CONF_DEVICE_SERIAL_NUMBER),
+                )
+                # Fall through to standalone mode if credentials exist
+                if CONF_USERNAME not in config:
+                    raise ConfigEntryNotReady(
+                        f"Hub {hub_id} not found and no standalone credentials"
+                    )
     
     # Create coordinator
     if hub:
